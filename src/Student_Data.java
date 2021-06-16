@@ -40,7 +40,7 @@ public class Student_Data {
 	private JTextField jtxtMajor;
 	private static JTextField jtxtComp;
 	//private static JTextField jtxtBool;
-	private JTable table;
+	private static JTable table;
 
 	/**
 	 * Launch the application.
@@ -105,6 +105,44 @@ public class Student_Data {
 	        }
 	        return list.toString();
 	    }
+
+	public static void loadData(){
+
+		try {
+			Class.forName("org.postgresql.Driver");
+			String url= "jdbc:postgresql://localhost:5432/StudentData";
+			Connection con =DriverManager.getConnection(url, "postgres" ,"baraza");
+			Statement st = con.createStatement();
+			String sql = "select * from student_info";
+			ResultSet rs = st.executeQuery(sql);
+
+			while(rs.next()) {
+
+				String student_name = rs.getString("student_name");
+				String student_id= rs.getString("reg_no");
+				String major = rs.getString("major");
+				String marks = rs.getString("grade");
+				String average =rs.getString("average");
+
+
+
+				String tbData[] = {student_name, student_id, major,marks, average};
+				DefaultTableModel tblModel =(DefaultTableModel)table.getModel();
+
+				tblModel.addRow(tbData);
+			}
+
+
+
+			con.close();
+
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+
+
+
+	}
 	   
 	   public static double computeAverage() {
 		   
@@ -281,6 +319,7 @@ public class Student_Data {
 				jtxtMajor.setText("");
 				jtxtComp.setText("");
 				jtxtAlgebra.setText("");
+				loadData();
 			  
 		  }
 		});
